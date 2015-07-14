@@ -25,11 +25,23 @@ def testeth_cmd(cmd=[], evmjit=False):
         cmd += ['--vm', 'jit']
     return cmd
 
-def cmake_cmd(cmd=[], ccache=True, evmjit=False, headless=True):
+
+def cmake_cmd(
+        cmd=[],
+        ccache=True,
+        evmjit=False,
+        headless=True,
+        opencl=True,
+        jsconsole=True
+):
     cmd.append("-DFATDB=1")
     cmd.append("-DBUNDLE=default")
     if headless:
         cmd.append("-DGUI=0")
+    if opencl:
+        cmd.append("-DETHASHCL=1")
+    if jsconsole:
+        cmd.append("-DJSCONSOLE=1")
     if evmjit:
         cmd.append("-DEVMJIT=1")
     elif ccache:
@@ -37,7 +49,14 @@ def cmake_cmd(cmd=[], ccache=True, evmjit=False, headless=True):
     return cmd
 
 
-def cpp_ethereum_factory(branch='master', deb=False, evmjit=False, headless=True):
+def cpp_ethereum_factory(
+        branch='master',
+        deb=False,
+        evmjit=False,
+        headless=True,
+        opencl=True,
+        jsconsole=True
+):
     factory = BuildFactory()
 
     for step in [
@@ -78,7 +97,13 @@ def cpp_ethereum_factory(branch='master', deb=False, evmjit=False, headless=True
         Configure(
             haltOnFailure=True,
             logEnviron=False,
-            command=cmake_cmd(["cmake", "."], evmjit=evmjit, headless=headless),
+            command=cmake_cmd(
+                ["cmake", "."],
+                evmjit=evmjit,
+                headless=headless,
+                opencl=opencl,
+                jsconsole=jsconsole
+            ),
             env={"PATH": "${QTDIR}/bin:${PATH}"}
         ),
         Compile(
